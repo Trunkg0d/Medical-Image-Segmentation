@@ -1,3 +1,4 @@
+print("Building libraries, waiting waiting ... please waiting ...")
 import torch
 import numpy as np
 from skimage.io import imread
@@ -7,29 +8,26 @@ from PIL import Image
 import torchvision.transforms as transforms
 
 def main():
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
-
     def read_config():
         try:
-            print("Choose dataset (1: ph2 dataset, 2: kvasir dataset)")
-            dataset_name = int(input().strip())
+            # print("Choose dataset (1: ph2 dataset, 2: kvasir dataset)")
+            dataset_name = int(input("Choose dataset (1: ph2 dataset, 2: kvasir dataset): ").strip())
             if dataset_name not in [1, 2]:
                 print("Invalid dataset choice.")
                 return -1, "", ""
 
-            print("Enter one image path (image in the dataset selected above):")
-            image_path = input().strip()
+            # print("Enter one image path (image in the dataset selected above):")
+            image_path = input("Enter one image path (image in the dataset selected above): ").strip()
 
-            print("Enter model weight path:")
-            model_weight_path = input().strip()
+            # print("Enter model weight path:")
+            model_weight_path = input("Enter model weight path: ").strip()
 
             return dataset_name, image_path, model_weight_path
         except Exception as e:
             print(f"Error in read_config: {e}")
             return -1, "", ""
-
     def predict_one_ph2(model, data_path):
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         try:
             size = (224, 224)
             ph2_image = imread(data_path)
@@ -50,12 +48,15 @@ def main():
             fig.add_subplot(1, 2, 2)
             plt.imshow(pred, cmap="gray")
             plt.title("Predicted")
-            plt.show()
+
+            plt.savefig('output.png')
+            # plt.show()
         except Exception as e:
             print(f"Error in predict_one_ph2: {e}")
 
     @torch.inference_mode()
     def predict_one_kvasir(model, image_path):
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         try:
             kvasir_image = imread(image_path)
             image = Image.open(image_path).convert('RGB')
@@ -81,7 +82,9 @@ def main():
             fig.add_subplot(1, 2, 2)
             plt.imshow(predict_label.cpu().numpy(), cmap="gray")
             plt.title("Predicted")
-            plt.show()
+
+            plt.savefig('output.png')
+            # plt.show()
         except Exception as e:
             print(f"Error in predict_one_kvasir: {e}")
 
